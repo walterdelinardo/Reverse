@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend/reverse_mci_backend
+    ports:
+      - "5000:5000"
+    environment:
+      - SECRET_KEY=uma-chave-secreta-muito-segura
+      - DATABASE_URL=sqlite:///app.db
+    volumes:
+      - ./backend/reverse_mci_backend:/app
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend/reverse_mci_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: reverse_mci
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
+

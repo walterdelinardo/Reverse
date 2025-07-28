@@ -1,0 +1,54 @@
+name: Deploy to Coolify
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  COOLIFY_SERVER: ${{ secrets.COOLIFY_SERVER }}
+  COOLIFY_APP_ID_BACKEND: ${{ secrets.COOLIFY_APP_ID_BACKEND }}
+  COOLIFY_APP_ID_FRONTEND: ${{ secrets.COOLIFY_APP_ID_FRONTEND }}
+  COOLIFY_API_KEY: ${{ secrets.COOLIFY_API_KEY }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push backend Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/reverse-mci-backend:latest -f backend/reverse_mci_backend/Dockerfile .
+        docker push ${{ secrets.DOCKER_USERNAME }}/reverse-mci-backend:latest
+
+    - name: Build and push frontend Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/reverse-mci-frontend:latest -f frontend/reverse_mci_frontend/Dockerfile .
+        docker push ${{ secrets.DOCKER_USERNAME }}/reverse-mci-frontend:latest
+
+    - name: Deploy backend to Coolify
+      run: |
+        curl -X POST \
+        -H "Authorization: Bearer $COOLIFY_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{"force": true}' \
+        "$COOLIFY_SERVER/api/v1/applications/$COOLIFY_APP_ID_BACKEND/deploy"
+
+    - name: Deploy frontend to Coolify
+      run: |
+        curl -X POST \
+        -H "Authorization: Bearer $COOLIFY_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{"force": true}' \
+        "$COOLIFY_SERVER/api/v1/applications/$COOLIFY_APP_ID_FRONTEND/deploy"
+
+
