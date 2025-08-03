@@ -1,13 +1,6 @@
 # Dependências do seu backend
 flask
-flask_cors
+flask-cors
 Flask-SQLAlchemy
 gunicorn
 psycopg2-binary
-# As bibliotecas para o seu serviço de IA, OCR, etc.
-# Exemplo (remova o que não usar):
-# requests
-# openai
-# pillow
-# scikit-learn # Se o seu ai_service.py usa isso
-# torch # Se o seu ai_service.py usa isso

@@ -4,7 +4,10 @@ FROM python:3.9-slim-buster
 # Define o diretório de trabalho dentro do container.
 WORKDIR /app
 
-# Copie o arquivo requirements.txt para o diretório de trabalho no container.
+# Adiciona o diretório de trabalho ao PYTHONPATH para que o Python encontre a pasta 'src'.
+ENV PYTHONPATH="/app"
+
+# Copia o arquivo requirements.txt para o diretório de trabalho no container.
 COPY requirements.txt .
 
 # Instala as dependências Python listadas no requirements.txt.
