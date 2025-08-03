@@ -6,23 +6,8 @@ services:
     ports:
       - "2001:5000"
     environment:
+      # Use as credenciais do seu banco de dados externo
       - SECRET_KEY=uma-chave-secreta-muito-segura
-      - DATABASE_URL=postgresql://bwqQCwau3ybME2RR:6XHFzssSRgbjzIMUzat3i557497Zcr38@db:5433/reverse_mci
+      - DATABASE_URL=postgresql://bwqQCWau3ybME2RR:6XHFzssSRgbjzIMUzat3i557497Zcr38@212.85.15.242:5233/postgres
     volumes:
       - .:/app
-    depends_on:
-      - db
-
-  db:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: reverse_mci
-      POSTGRES_USER: bwqQCwau3ybME2RR
-      POSTGRES_PASSWORD: 6XHFzssSRgbjzIMUzat3i557497Zcr38
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"
-
-volumes:
-  postgres_data:
