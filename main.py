@@ -1,19 +1,22 @@
-import sys
-import os
-src_path = os.path.join(os.path.dirname(__file__), 'src')
-if src_path not in sys.path:
-    sys.path.insert(0, src_path)
-
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 
-try:
-    from src.models.user import db
-except ImportError:
-    raise ImportError("Cannot import 'db' from 'src.models.user'. Ensure 'src/models/user.py' exists and defines 'db'.")
+# Importações de modelos
+from src.models.user import db
+from src.models.surgery import Surgery
+from src.models.document import Document
+from src.models.report import Report
 
-from routes.user import user_bp
+# Importações de blueprints (rotas)
+from src.routes.user import user_bp
+from src.routes.surgery import surgery_bp
+from src.routes.document import document_bp
+from src.routes.report import report_bp
+from src.routes.whatsapp import whatsapp_bp
+from src.routes.asana import asana_bp
+
 from config import Config
+import os
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 app.config.from_object(Config)
@@ -23,6 +26,11 @@ CORS(app, origins="*")
 
 # Registrar blueprints
 app.register_blueprint(user_bp, url_prefix='/api')
+app.register_blueprint(surgery_bp, url_prefix='/api')
+app.register_blueprint(document_bp, url_prefix='/api')
+app.register_blueprint(report_bp, url_prefix='/api')
+app.register_blueprint(whatsapp_bp, url_prefix='/api')
+app.register_blueprint(asana_bp, url_prefix='/api')
 
 # Configurar banco de dados
 db.init_app(app)
@@ -34,7 +42,7 @@ with app.app_context():
 def serve(path):
     static_folder_path = app.static_folder
     if static_folder_path is None:
-            return "Static folder not configured", 404
+        return "Static folder not configured", 404
 
     if path != "" and os.path.exists(os.path.join(static_folder_path, path)):
         return send_from_directory(static_folder_path, path)
